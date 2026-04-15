@@ -2,11 +2,9 @@
 
 A Generative AI web app that explains code, detects bugs, generates corrected code, creates API documentation, suggests optimized solutions, and allows users to download the generated analysis as a PDF.
 
-## Team
+website URL:-
 
-**Team Name:** Cognitive Coders
-
-**Team Members:** Devraj, Dev, Anubhav
+https://automated-code-assistant-2-zzmk4uf4qphzd9rvzi7blk.streamlit.app/
 
 ## Domain
 
