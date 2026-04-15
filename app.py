@@ -123,11 +123,12 @@ def create_pdf_report(content: str, language: str, doc_style: str) -> bytes:
     return bytes(data)
 
 
-def write_wrapped_pdf_line(pdf: FPDF, line: str, width: int = 95):
+def write_wrapped_pdf_line(pdf: FPDF, line: str, width: int = 70):
     if not line:
         pdf.ln(4)
         return
 
+    printable_width = pdf.w - pdf.l_margin - pdf.r_margin
     chunks = textwrap.wrap(
         line,
         width=width,
@@ -136,7 +137,13 @@ def write_wrapped_pdf_line(pdf: FPDF, line: str, width: int = 95):
         replace_whitespace=False,
     )
     for chunk in chunks or [""]:
-        pdf.multi_cell(0, 6, chunk)
+        pdf.set_x(pdf.l_margin)
+        try:
+            pdf.multi_cell(printable_width, 6, chunk)
+        except Exception:
+            for start in range(0, len(chunk), 45):
+                pdf.set_x(pdf.l_margin)
+                pdf.multi_cell(printable_width, 6, chunk[start : start + 45])
 
 
 class CodeAssistantState(TypedDict):
