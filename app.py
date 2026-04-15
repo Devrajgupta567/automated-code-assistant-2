@@ -1,4 +1,5 @@
 from datetime import datetime
+import textwrap
 from typing import TypedDict
 
 import requests
@@ -102,24 +103,40 @@ def create_pdf_report(content: str, language: str, doc_style: str) -> bytes:
         if line.startswith("# "):
             pdf.ln(2)
             pdf.set_font("Arial", "B", 14)
-            pdf.multi_cell(0, 8, line.replace("# ", ""))
+            write_wrapped_pdf_line(pdf, line.replace("# ", ""), width=80)
             pdf.set_font("Arial", "", 11)
         elif line.startswith("## "):
             pdf.ln(2)
             pdf.set_font("Arial", "B", 12)
-            pdf.multi_cell(0, 7, line.replace("## ", ""))
+            write_wrapped_pdf_line(pdf, line.replace("## ", ""), width=85)
             pdf.set_font("Arial", "", 11)
         elif line.strip() == "---":
             pdf.ln(2)
             pdf.cell(0, 1, "", border="T", ln=True)
             pdf.ln(2)
         else:
-            pdf.multi_cell(0, 6, line)
+            write_wrapped_pdf_line(pdf, line, width=95)
 
     data = pdf.output(dest="S")
     if isinstance(data, str):
         return data.encode("latin-1")
     return bytes(data)
+
+
+def write_wrapped_pdf_line(pdf: FPDF, line: str, width: int = 95):
+    if not line:
+        pdf.ln(4)
+        return
+
+    chunks = textwrap.wrap(
+        line,
+        width=width,
+        break_long_words=True,
+        break_on_hyphens=False,
+        replace_whitespace=False,
+    )
+    for chunk in chunks or [""]:
+        pdf.multi_cell(0, 6, chunk)
 
 
 class CodeAssistantState(TypedDict):
